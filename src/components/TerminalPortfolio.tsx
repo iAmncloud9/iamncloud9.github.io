@@ -23,6 +23,10 @@ const DIRECTORIES = [...Object.keys(portfolioFiles), "blogs"];
 const COMMANDS = ["help", "whoami", "pwd", "ls", "cd", "cat", "tree", "open", "history", "date", "clear", "exit"];
 const HEADER_MOTTOS = ["LEARN TO HACK", "HACK TO LEARN"];
 const LEAVE_HOME_WARNING = "WTF? Where are you going? Nothing here?";
+const WELCOME_LEAD = "WELCOME TO MY";
+const WELCOME_TITLE = "PORTFOLIO";
+const WELCOME_TYPING_DURATION = 10_000;
+const WELCOME_LOOP_PAUSE = 2_000;
 
 type VirtualEntry = { name: string; type: "directory" | "file" };
 
@@ -76,23 +80,64 @@ const HelpOutput = () => (
   </div>
 );
 
-const Welcome = () => (
-  <section className="welcome" aria-label="Welcome banner">
-    <div className="eyebrow"><span /> SYSTEM READY · PORTFOLIO v1.0</div>
-    <h1>
-      <span>WELCOME TO MY</span>
-      <strong>PORTFOLIO<span className="cursor-block" aria-hidden="true" /></strong>
-    </h1>
-    <div className="identity-line">
-      <span className="identity-name">{profile.name}</span>
-      <span className="identity-divider">/</span>
-      <span className="identity-alias">{profile.alias}</span>
-      <span className="identity-divider">/</span>
-      <span>{profile.role}</span>
-    </div>
-    <p className="welcome-help">Type <button type="button" data-command="help">&quot;help&quot;</button> for more information.</p>
-  </section>
-);
+function Welcome() {
+  const totalCharacters = WELCOME_LEAD.length + WELCOME_TITLE.length;
+  const [visibleCharacters, setVisibleCharacters] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisibleCharacters(totalCharacters);
+      return;
+    }
+
+    const characterDelay = WELCOME_TYPING_DURATION / totalCharacters;
+    let currentCharacter = 0;
+    let timer: number;
+
+    const typeNextCharacter = () => {
+      if (currentCharacter < totalCharacters) {
+        timer = window.setTimeout(() => {
+          currentCharacter += 1;
+          setVisibleCharacters(currentCharacter);
+          typeNextCharacter();
+        }, characterDelay);
+        return;
+      }
+
+      timer = window.setTimeout(() => {
+        currentCharacter = 0;
+        setVisibleCharacters(0);
+        typeNextCharacter();
+      }, WELCOME_LOOP_PAUSE);
+    };
+
+    typeNextCharacter();
+    return () => window.clearTimeout(timer);
+  }, [totalCharacters]);
+
+  const visibleLead = WELCOME_LEAD.slice(0, Math.min(visibleCharacters, WELCOME_LEAD.length));
+  const visibleTitle = WELCOME_TITLE.slice(0, Math.max(0, visibleCharacters - WELCOME_LEAD.length));
+  const cursorIsOnLead = visibleCharacters <= WELCOME_LEAD.length;
+
+  return (
+    <section className="welcome" aria-label="Welcome banner">
+      <div className="eyebrow"><span /> SYSTEM READY · PORTFOLIO v1.0</div>
+      <h1>
+        <span className="sr-only">{WELCOME_LEAD} {WELCOME_TITLE}</span>
+        <span className="welcome-line" aria-hidden="true">{visibleLead}{cursorIsOnLead && <span className="cursor-block" />}</span>
+        <strong aria-hidden="true">{visibleTitle}{!cursorIsOnLead && <span className="cursor-block" />}</strong>
+      </h1>
+      <div className="identity-line">
+        <span className="identity-name">{profile.name}</span>
+        <span className="identity-divider">/</span>
+        <span className="identity-alias">{profile.alias}</span>
+        <span className="identity-divider">/</span>
+        <span>{profile.role}</span>
+      </div>
+      <p className="welcome-help">Type <button type="button" data-command="help">&quot;help&quot;</button> for more information.</p>
+    </section>
+  );
+}
 
 function Prompt({ path }: { path: string }) {
   const shortPath = path === HOME ? "~" : path.startsWith(`${HOME}/`) ? `~/${path.slice(HOME.length + 1)}` : path;

@@ -172,8 +172,8 @@ a { color: inherit; }
 .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; color: #70847a; font-size: 9.9px; letter-spacing: .2em; }
 .eyebrow span { width: 24px; height: 1px; background: var(--green); box-shadow: 0 0 10px var(--green); }
 .welcome h1 { margin: 0; font-family: var(--sans); letter-spacing: -.055em; text-transform: uppercase; }
-.welcome h1 > span { display: block; margin-bottom: 4px; color: #516059; font-size: clamp(22px, 3.63vw, 44px); font-weight: 500; }
-.welcome h1 strong { display: flex; align-items: center; color: #e1ece6; font-size: clamp(51.7px, 9.35vw, 115.5px); line-height: .9; text-shadow: 0 0 32px rgba(177, 246, 208, .1); }
+.welcome-line { display: block; min-height: 1em; margin-bottom: 4px; color: #516059; font-size: clamp(22px, 3.63vw, 44px); font-weight: 500; }
+.welcome h1 strong { display: flex; min-height: .9em; align-items: center; color: #e1ece6; font-size: clamp(51.7px, 9.35vw, 115.5px); line-height: .9; text-shadow: 0 0 32px rgba(177, 246, 208, .1); }
 .cursor-block { display: inline-block; width: .08em; height: .75em; margin-left: .08em; background: var(--green); box-shadow: 0 0 13px rgba(112,245,173,.65); animation: blink 1.05s steps(1) infinite; }
 .identity-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 25px; color: #819087; font-size: clamp(11px, 1.265vw, 14.3px); text-transform: uppercase; letter-spacing: .075em; }
 .identity-name { color: #d4dfd9; }
