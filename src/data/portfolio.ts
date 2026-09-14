@@ -31,6 +31,12 @@ export const portfolioFiles = {
   path: ["journey.tree"],
 } as const;
 
+/** Files available directly under the virtual root directory. */
+export const rootFiles = {
+  "angel.txt": "Stay curious. Learn with purpose. Use your skills to make systems safer.",
+  "devil.txt": "Question every assumption. Break things in the lab. See how deep the rabbit hole goes.",
+} as const;
+
 // TODO: Replace every value marked [PLACEHOLDER] with your real information.
 export const profile = {
   name: "NGUYEN VAN CHIEN",

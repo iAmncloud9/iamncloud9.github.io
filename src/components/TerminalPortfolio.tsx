@@ -3,14 +3,19 @@
 import { FormEvent, KeyboardEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import CloudLogo from "@/components/CloudLogo";
-import { achievements, blogs, contacts, experiences, journey, portfolioFiles, profile } from "@/data/portfolio";
+import { achievements, blogs, contacts, experiences, journey, portfolioFiles, profile, rootFiles } from "@/data/portfolio";
 import { calculateExperienceDuration } from "@/lib/experienceDuration";
 
 type OutputItem = {
   id: number;
   command?: string;
   path?: string;
+  confirmation?: boolean;
   content: ReactNode;
+};
+
+type PendingNavigation = {
+  target: string;
 };
 
 const HOME = `/home/${profile.alias}`;
@@ -26,7 +31,12 @@ type VirtualEntry = { name: string; type: "directory" | "file" };
  * the blog data automatically.
  */
 function getDirectoryEntries(targetPath: string): VirtualEntry[] | null {
-  if (targetPath === "/") return [{ name: "home", type: "directory" }];
+  if (targetPath === "/") {
+    return [
+      { name: "home", type: "directory" },
+      ...Object.keys(rootFiles).map((name) => ({ name, type: "file" as const })),
+    ];
+  }
   if (targetPath === "/home") return [{ name: profile.alias, type: "directory" }];
   if (targetPath === HOME) return DIRECTORIES.map((name) => ({ name, type: "directory" }));
   if (targetPath === `${HOME}/blogs`) return blogs.map((blog) => ({ name: `${blog.slug}.blog`, type: "file" }));
@@ -83,14 +93,16 @@ const Welcome = () => (
   </section>
 );
 
-function Prompt({ path }: { path: string }) {
+function Prompt({ path, confirmation = false }: { path: string; confirmation?: boolean }) {
   const shortPath = path === HOME ? "~" : path.startsWith(`${HOME}/`) ? `~/${path.slice(HOME.length + 1)}` : path;
   return (
     <span className="prompt" aria-hidden="true">
       <span className="prompt-user">guest@{profile.alias}</span>
       <span className="prompt-separator">:</span>
       <span className="prompt-path">{shortPath}</span>
-      <span className="prompt-symbol">$</span>
+      {confirmation
+        ? <span className="prompt-confirmation">[y/n]</span>
+        : <span className="prompt-symbol">$</span>}
     </span>
   );
 }
@@ -184,6 +196,7 @@ export default function TerminalPortfolio() {
   const [clock, setClock] = useState("");
   const [loginDate, setLoginDate] = useState("-- ---");
   const [mottoIndex, setMottoIndex] = useState(0);
+  const [pendingNavigation, setPendingNavigation] = useState<PendingNavigation | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(1);
@@ -210,8 +223,8 @@ export default function TerminalPortfolio() {
     bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight, behavior: "smooth" });
   }, [outputs]);
 
-  const addOutput = (command: string, content: ReactNode, commandPath = path) => {
-    setOutputs((current) => [...current, { id: nextId.current++, command, path: commandPath, content }]);
+  const addOutput = (command: string, content: ReactNode, commandPath = path, confirmation = false) => {
+    setOutputs((current) => [...current, { id: nextId.current++, command, path: commandPath, confirmation, content }]);
   };
 
   const resolvePath = (target: string) => {
@@ -243,7 +256,14 @@ export default function TerminalPortfolio() {
 
   const renderFile = (filename: string): ReactNode | null => {
     const cleanName = filename.split("/").pop() ?? filename;
-    const effectivePath = filename.includes("/") ? resolvePath(filename.split("/").slice(0, -1).join("/")) : path;
+    const lastSlashIndex = filename.lastIndexOf("/");
+    const parentToken = lastSlashIndex === 0 ? "/" : filename.slice(0, lastSlashIndex);
+    const effectivePath = lastSlashIndex >= 0 ? resolvePath(parentToken || ".") : path;
+
+    if (effectivePath === "/" && cleanName in rootFiles) {
+      const content = rootFiles[cleanName as keyof typeof rootFiles];
+      return <p className={`root-file ${cleanName === "angel.txt" ? "is-angel" : "is-devil"}`}>{content}</p>;
+    }
 
     if (cleanName === "profile.txt" && effectivePath === `${HOME}/information`) {
       return <div className="info-card"><p><span>name</span>{profile.name}</p><p><span>alias</span>{profile.alias}</p><p><span>role</span>{profile.role}</p><p><span>location</span>{profile.location}</p><p><span>workplace</span>{profile.workplace}</p><p><span>about</span>{profile.bio}</p></div>;
@@ -282,6 +302,23 @@ export default function TerminalPortfolio() {
     setHistory((current) => [...current, trimmed]);
     setHistoryIndex(-1);
 
+    if (pendingNavigation) {
+      const answer = trimmed.toLowerCase();
+      if (answer === "y" || answer === "yes") {
+        addOutput(trimmed, <p className="warning-resolution">Proceeding to {pendingNavigation.target}. Watch your step.</p>, commandPath, true);
+        setPath(pendingNavigation.target);
+        setPendingNavigation(null);
+        return;
+      }
+      if (answer === "n" || answer === "no") {
+        addOutput(trimmed, <p className="success-message">Navigation cancelled. Staying at {path}.</p>, commandPath, true);
+        setPendingNavigation(null);
+        return;
+      }
+      addOutput(trimmed, <p className="warning-message">Please answer with <strong>y</strong> or <strong>n</strong>. <span>[y/n]</span></p>, commandPath, true);
+      return;
+    }
+
     if (base === "clear") {
       setOutputs([]);
       return;
@@ -300,6 +337,12 @@ export default function TerminalPortfolio() {
     if (base === "cd") {
       const target = resolvePath(args[0] ?? "~");
       if (!directoryExists(target)) return addOutput(trimmed, <p className="error-message">cd: {args[0]}: No such file or directory</p>, commandPath);
+      const isLeavingHome = (path === HOME || path.startsWith(`${HOME}/`)) && target !== HOME && !target.startsWith(`${HOME}/`);
+      if (isLeavingHome) {
+        addOutput(trimmed, <p className="warning-message">WTF? Where are you going? Nothing here? Wanna continue? <span>[y/n]</span></p>, commandPath);
+        setPendingNavigation({ target });
+        return;
+      }
       addOutput(trimmed, null, commandPath);
       setPath(target);
       return;
@@ -421,15 +464,15 @@ export default function TerminalPortfolio() {
             <div className="terminal-output" aria-live="polite">
               {outputs.map((item) => (
                 <div className="output-block" key={item.id}>
-                  {item.command && <div className="previous-command"><Prompt path={item.path ?? HOME} /><span>{item.command}</span></div>}
+                  {item.command && <div className="previous-command"><Prompt path={item.path ?? HOME} confirmation={item.confirmation} /><span>{item.command}</span></div>}
                   {item.content && <div className="command-result">{item.content}</div>}
                 </div>
               ))}
             </div>
             {!closing && <form className="command-line" onSubmit={handleSubmit}>
               <label className="sr-only" htmlFor="terminal-input">Enter a terminal command</label>
-              <Prompt path={path} />
-              <input id="terminal-input" ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoComplete="off" autoCorrect="off" spellCheck={false} autoFocus aria-describedby="terminal-instructions" />
+              <Prompt path={path} confirmation={Boolean(pendingNavigation)} />
+              <input id="terminal-input" ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoComplete="off" autoCorrect="off" spellCheck={false} autoFocus aria-label={pendingNavigation ? "Answer y or n" : "Enter a terminal command"} aria-describedby="terminal-instructions" />
             </form>}
             <p id="terminal-instructions" className="sr-only">Type help to see the list of available commands.</p>
           </div>
@@ -439,7 +482,7 @@ export default function TerminalPortfolio() {
 
       <nav className="quick-commands" aria-label="Quick commands">
         <span>QUICK START</span>
-        {["help", "ls", "whoami", "tree"].map((command) => <button key={command} type="button" onClick={() => executeCommand(command)}><i>$</i> {command}</button>)}
+        {["help", "ls", "whoami", "tree"].map((command) => <button key={command} type="button" disabled={Boolean(pendingNavigation)} onClick={() => executeCommand(command)}><i>$</i> {command}</button>)}
       </nav>
 
       <footer className="site-footer"><span>© {new Date().getFullYear()} {profile.alias.toUpperCase()}</span><span>ALWAYS LEARNING. ALWAYS EVOLVING.</span><span className="footer-flag" role="img" aria-label="Vietnam flag" title="Vietnam" /></footer>

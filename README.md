@@ -31,6 +31,9 @@ The `ls` output, `tree`, and path-aware `Tab` autocomplete all read from this
 single registry. Blog filenames are generated automatically from the `blogs`
 array, so a new blog entry is immediately available as `blogs/<slug>.blog`.
 
+Files placed directly in `/` are registered in `rootFiles`. Both their names and
+contents are defined there, so `ls /`, `cat /<file>` and autocomplete stay in sync.
+
 Autocomplete supports relative, parent, home, and absolute paths, for example:
 
 ```text

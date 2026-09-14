@@ -16,6 +16,7 @@ tiếp giao diện.
 | Hành trình quá khứ, hiện tại, tương lai | `cat path/journey.tree` | `journey` |
 | Danh sách và nội dung bài viết | `ls blogs`, sau đó `cat blogs/<slug>.blog` | `blogs` |
 | Tên file xuất hiện trong filesystem | `tree` | `portfolioFiles` |
+| File ở thư mục gốc `/` | `ls /`, sau đó `cat /angel.txt` hoặc `cat /devil.txt` | `rootFiles` |
 
 Các giá trị `profile.alias` hiện cũng được dùng để tạo prompt, home path, brand,
 metadata, tên tác giả blog và footer. Thay alias tại đây sẽ cập nhật đồng bộ các
@@ -228,6 +229,10 @@ buộc để `cat` biết cách hiển thị nội dung thay vì báo file khôn
 Nếu muốn thêm cả thư mục cấp một mới, cần mở rộng `portfolioFiles` và thêm phần
 render nội dung tương ứng. Các thư mục sâu hơn một cấp hiện chưa phải cấu trúc
 nội dung mặc định.
+
+File nằm trực tiếp trong `/` được khai báo bằng cả tên và nội dung trong
+`rootFiles`. Không cần thêm nhánh riêng vào `renderFile`; `ls`, `cat` và
+autocomplete sẽ tự nhận file mới.
 
 ## 9. Quy trình cập nhật khuyến nghị
 
