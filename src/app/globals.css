@@ -375,9 +375,13 @@ kbd { padding: 1px 5px; border: 1px solid #334039; border-bottom-width: 2px; bor
   .blog-content { display: block; }
   .blog-aside { position: static; margin-bottom: 35px; }
   .blog-aside a { display: inline; margin-right: 12px; }
-  .blog-navigation { grid-template-columns: 1fr; }
-  .blog-next.is-prev { padding: 22px 0; }
-  .blog-next.is-next { padding: 22px 0; border-top: 1px solid var(--border); border-left: 0; }
+  .blog-navigation { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .blog-next { gap: 9px; padding-block: 20px; }
+  .blog-next.is-prev { padding-right: 12px; }
+  .blog-next.is-next { padding-left: 12px; border-top: 0; border-left: 1px solid var(--border); }
+  .blog-next small { font-size: 9px; }
+  .blog-next strong { font-size: 13px; line-height: 1.35; }
+  .blog-navigation-arrow { font-size: 19px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
