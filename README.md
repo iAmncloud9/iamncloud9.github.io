@@ -30,6 +30,8 @@ Register new static filenames in `portfolioFiles` inside `src/data/portfolio.ts`
 The `ls` output, `tree`, and path-aware `Tab` autocomplete all read from this
 single registry. Blog filenames are generated automatically from the `blogs`
 array, so a new blog entry is immediately available as `blogs/<slug>.blog`.
+Each blog contains both `translations.en` and `translations.vi`; English is the
+default and the reader remembers the visitor's language selection.
 
 Files placed directly in `/` are registered in `rootFiles`. Both their names and
 contents are defined there, so `ls /`, `cat /<file>` and autocomplete stay in sync.

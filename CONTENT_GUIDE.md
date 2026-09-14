@@ -140,9 +140,10 @@ cat experiences/career.tree
 
 ## 7. Quản lý bài blog
 
-Blog hiện không phải là file `.blog` vật lý. Mỗi bài là một object trong mảng
-`blogs`; terminal tự biểu diễn object đó thành `<slug>.blog`, còn Next.js tự tạo
-route `/blog/<slug>`.
+Blog hiện không phải là file `.blog` vật lý. Mỗi bài là một object song ngữ trong
+mảng `blogs`; terminal tự biểu diễn object đó thành `<slug>.blog`, còn Next.js tự
+tạo route `/blog/<slug>`. Tiếng Anh là ngôn ngữ mặc định; lựa chọn EN/VI của khách
+được ghi nhớ khi chuyển giữa các bài.
 
 Ba bài mẫu hiện có:
 
@@ -159,26 +160,32 @@ Thêm object sau vào mảng `blogs`:
 ```ts
 {
   slug: "ten-bai-viet",
-  title: "Tiêu đề bài viết",
   date: "2026-09-12",
-  readTime: "5 min read",
-  summary: "Mô tả ngắn dùng ở metadata và phần mở đầu.",
   tags: ["security", "writeup"],
-  sections: [
-    {
-      heading: "Phần mở đầu",
-      body: [
-        "Đoạn văn thứ nhất.",
-        "Đoạn văn thứ hai.",
+  translations: {
+    en: {
+      title: "English title",
+      readTime: "5 min read",
+      summary: "Short English description for metadata and the introduction.",
+      sections: [
+        {
+          heading: "Introduction",
+          body: ["First paragraph.", "Second paragraph."],
+        },
       ],
     },
-    {
-      heading: "Bài học rút ra",
-      body: [
-        "Nội dung phần tiếp theo.",
+    vi: {
+      title: "Tiêu đề tiếng Việt",
+      readTime: "5 phút đọc",
+      summary: "Mô tả ngắn bằng tiếng Việt.",
+      sections: [
+        {
+          heading: "Mở đầu",
+          body: ["Đoạn văn thứ nhất.", "Đoạn văn thứ hai."],
+        },
       ],
     },
-  ],
+  },
 },
 ```
 
@@ -186,7 +193,9 @@ Quy ước:
 
 - `slug` phải duy nhất, viết thường, dùng dấu gạch ngang và không thêm `.blog`.
 - `date` dùng định dạng `YYYY-MM-DD`.
-- `readTime` hiện được nhập thủ công.
+- Mỗi bài phải có đủ `translations.en` và `translations.vi` với cùng cấu trúc.
+- `readTime` của từng ngôn ngữ hiện được nhập thủ công.
+- Metadata và danh sách trong terminal dùng bản tiếng Anh mặc định.
 - Mỗi phần trong `sections` tự xuất hiện trong mục “ON THIS PAGE”.
 - Mỗi phần tử `body` là một đoạn văn riêng.
 - Không cần thêm route hoặc thêm filename vào `portfolioFiles` cho blog.

@@ -28,7 +28,7 @@ type VirtualEntry = { name: string; type: "directory" | "file" };
 
 /**
  * Single source of truth for directory listings and path autocomplete.
- * Add future static files to PORTFOLIO_FILES; blog filenames are derived from
+ * Add future static files to portfolioFiles; blog filenames are derived from
  * the blog data automatically.
  */
 function getDirectoryEntries(targetPath: string): VirtualEntry[] | null {
@@ -252,7 +252,7 @@ export default function TerminalPortfolio() {
   const listDirectory = (targetPath: string): ReactNode => {
     const entries = getDirectoryEntries(targetPath);
     if (!entries) return null;
-    if (targetPath === `${HOME}/blogs`) return <div className="ls-list">{blogs.map((blog) => <ClickableCommand key={blog.slug} command={`cat ${targetPath}/${blog.slug}.blog`}><span className="blog-file">{blog.slug}.blog</span><span className="file-meta">{blog.date} · {blog.title}</span></ClickableCommand>)}</div>;
+    if (targetPath === `${HOME}/blogs`) return <div className="ls-list">{blogs.map((blog) => <ClickableCommand key={blog.slug} command={`cat ${targetPath}/${blog.slug}.blog`}><span className="blog-file">{blog.slug}.blog</span><span className="file-meta">{blog.date} · {blog.translations.en.title}</span></ClickableCommand>)}</div>;
 
     return <div className="ls-grid">{entries.map((entry) => {
       const absoluteEntryPath = `${targetPath === "/" ? "" : targetPath}/${entry.name}`;
