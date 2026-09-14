@@ -22,6 +22,7 @@ const HOME = `/home/${profile.alias}`;
 const DIRECTORIES = [...Object.keys(portfolioFiles), "blogs"];
 const COMMANDS = ["help", "whoami", "pwd", "ls", "cd", "cat", "tree", "open", "history", "date", "clear", "exit"];
 const HEADER_MOTTOS = ["LEARN TO HACK", "HACK TO LEARN"];
+const LEAVE_HOME_WARNING = "WTF? Where are you going? Nothing here? Wanna continue?";
 
 type VirtualEntry = { name: string; type: "directory" | "file" };
 
@@ -93,18 +94,20 @@ const Welcome = () => (
   </section>
 );
 
-function Prompt({ path, confirmation = false }: { path: string; confirmation?: boolean }) {
+function Prompt({ path }: { path: string }) {
   const shortPath = path === HOME ? "~" : path.startsWith(`${HOME}/`) ? `~/${path.slice(HOME.length + 1)}` : path;
   return (
     <span className="prompt" aria-hidden="true">
       <span className="prompt-user">guest@{profile.alias}</span>
       <span className="prompt-separator">:</span>
       <span className="prompt-path">{shortPath}</span>
-      {confirmation
-        ? <span className="prompt-confirmation">[y/n]</span>
-        : <span className="prompt-symbol">$</span>}
+      <span className="prompt-symbol">$</span>
     </span>
   );
+}
+
+function ConfirmationPrompt() {
+  return <span className="confirmation-prompt">{LEAVE_HOME_WARNING} <span>[y/n]</span></span>;
 }
 
 function ClickableCommand({ command, children, className = "" }: { command: string; children: ReactNode; className?: string }) {
@@ -261,8 +264,13 @@ export default function TerminalPortfolio() {
     const effectivePath = lastSlashIndex >= 0 ? resolvePath(parentToken || ".") : path;
 
     if (effectivePath === "/" && cleanName in rootFiles) {
-      const content = rootFiles[cleanName as keyof typeof rootFiles];
-      return <p className={`root-file ${cleanName === "angel.txt" ? "is-angel" : "is-devil"}`}>{content}</p>;
+      const file = rootFiles[cleanName as keyof typeof rootFiles];
+      return (
+        <p className={`root-file ${cleanName === "angel.txt" ? "is-angel" : "is-devil"}`}>
+          {file.content}
+          {file.link && <a className="root-file-link" href={file.link.href} target="_blank" rel="noreferrer">{file.link.label}</a>}
+        </p>
+      );
     }
 
     if (cleanName === "profile.txt" && effectivePath === `${HOME}/information`) {
@@ -305,13 +313,13 @@ export default function TerminalPortfolio() {
     if (pendingNavigation) {
       const answer = trimmed.toLowerCase();
       if (answer === "y" || answer === "yes") {
-        addOutput(trimmed, <p className="warning-resolution">Proceeding to {pendingNavigation.target}. Watch your step.</p>, commandPath, true);
+        addOutput(trimmed, <p className="warning-resolution">Do not try to root me! Nothing for u</p>, commandPath, true);
         setPath(pendingNavigation.target);
         setPendingNavigation(null);
         return;
       }
       if (answer === "n" || answer === "no") {
-        addOutput(trimmed, <p className="success-message">Navigation cancelled. Staying at {path}.</p>, commandPath, true);
+        addOutput(trimmed, <p className="success-message">You made a wise choice!</p>, commandPath, true);
         setPendingNavigation(null);
         return;
       }
@@ -339,7 +347,7 @@ export default function TerminalPortfolio() {
       if (!directoryExists(target)) return addOutput(trimmed, <p className="error-message">cd: {args[0]}: No such file or directory</p>, commandPath);
       const isLeavingHome = (path === HOME || path.startsWith(`${HOME}/`)) && target !== HOME && !target.startsWith(`${HOME}/`);
       if (isLeavingHome) {
-        addOutput(trimmed, <p className="warning-message">WTF? Where are you going? Nothing here? Wanna continue? <span>[y/n]</span></p>, commandPath);
+        addOutput(trimmed, null, commandPath);
         setPendingNavigation({ target });
         return;
       }
@@ -464,14 +472,14 @@ export default function TerminalPortfolio() {
             <div className="terminal-output" aria-live="polite">
               {outputs.map((item) => (
                 <div className="output-block" key={item.id}>
-                  {item.command && <div className="previous-command"><Prompt path={item.path ?? HOME} confirmation={item.confirmation} /><span>{item.command}</span></div>}
+                  {item.command && <div className={`previous-command ${item.confirmation ? "is-confirmation" : ""}`}>{item.confirmation ? <ConfirmationPrompt /> : <Prompt path={item.path ?? HOME} />}<span>{item.command}</span></div>}
                   {item.content && <div className="command-result">{item.content}</div>}
                 </div>
               ))}
             </div>
-            {!closing && <form className="command-line" onSubmit={handleSubmit}>
+            {!closing && <form className={`command-line ${pendingNavigation ? "is-confirmation" : ""}`} onSubmit={handleSubmit}>
               <label className="sr-only" htmlFor="terminal-input">Enter a terminal command</label>
-              <Prompt path={path} confirmation={Boolean(pendingNavigation)} />
+              {pendingNavigation ? <ConfirmationPrompt /> : <Prompt path={path} />}
               <input id="terminal-input" ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoComplete="off" autoCorrect="off" spellCheck={false} autoFocus aria-label={pendingNavigation ? "Answer y or n" : "Enter a terminal command"} aria-describedby="terminal-instructions" />
             </form>}
             <p id="terminal-instructions" className="sr-only">Type help to see the list of available commands.</p>

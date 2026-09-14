@@ -33,8 +33,17 @@ export const portfolioFiles = {
 
 /** Files available directly under the virtual root directory. */
 export const rootFiles = {
-  "angel.txt": "Stay curious. Learn with purpose. Use your skills to make systems safer.",
-  "devil.txt": "Question every assumption. Break things in the lab. See how deep the rabbit hole goes.",
+  "angel.txt": {
+    content: "aWFtbmNsb3VkOXtINHYzX0BfOTAwZF9kNHlfISEhfQ==",
+    link: null,
+  },
+  "devil.txt": {
+    content: "Continue ",
+    link: {
+      label: "here",
+      href: "https://youtu.be/dQw4w9WgXcQ?si=MYGaL_W9A68wDQa1",
+    },
+  },
 } as const;
 
 // TODO: Replace every value marked [PLACEHOLDER] with your real information.
