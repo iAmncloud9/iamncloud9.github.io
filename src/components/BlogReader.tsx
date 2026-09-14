@@ -42,28 +42,28 @@ function LanguageFlagToggle({ language, onToggle }: { language: BlogLanguage; on
 
   return (
     <button className="blog-language-toggle" type="button" onClick={onToggle} aria-label={`Switch blog language to ${nextLanguage}`} title={`Switch to ${nextLanguage}`}>
-      <svg className="crossed-language-flags" viewBox="0 0 100 62" aria-hidden="true">
-        <g className="crossed-flag-poles">
-          <line x1="14" y1="4" x2="77" y2="59" />
-          <line x1="86" y1="4" x2="23" y2="59" />
-          <circle cx="14" cy="4" r="2.5" /><circle cx="86" cy="4" r="2.5" />
+      <svg className="single-language-flag" viewBox="0 0 44 30" aria-hidden="true" key={language}>
+        <defs><clipPath id="language-flag-clip"><rect x="1" y="1" width="42" height="28" rx="2" /></clipPath></defs>
+        <g clipPath="url(#language-flag-clip)">
+          {language === "en" ? (
+            <>
+              <rect x="1" y="1" width="42" height="28" fill="#fff" />
+              {[1, 5, 9, 13, 17, 21, 25].map((y) => <rect x="1" y={y} width="42" height="2" fill="#b22234" key={y} />)}
+              <rect x="1" y="1" width="18" height="15" fill="#3c3b6e" />
+              <g fill="#fff">
+                <circle cx="4" cy="4" r=".8" /><circle cx="9" cy="4" r=".8" /><circle cx="14" cy="4" r=".8" />
+                <circle cx="6.5" cy="8" r=".8" /><circle cx="11.5" cy="8" r=".8" /><circle cx="16.5" cy="8" r=".8" />
+                <circle cx="4" cy="12" r=".8" /><circle cx="9" cy="12" r=".8" /><circle cx="14" cy="12" r=".8" />
+              </g>
+            </>
+          ) : (
+            <>
+              <rect x="1" y="1" width="42" height="28" fill="#da251d" />
+              <polygon points="22,6 24.2,12.7 31.2,12.7 25.6,16.8 27.7,23.5 22,19.4 16.3,23.5 18.4,16.8 12.8,12.7 19.8,12.7" fill="#ffcd00" />
+            </>
+          )}
         </g>
-        <g className={`language-flag is-us ${language === "en" ? "is-active" : ""}`} transform="rotate(6 14 4)">
-          <rect x="14" y="6" width="42" height="26" rx="1" fill="#fff" />
-          {[6, 10, 14, 18, 22, 26, 30].map((y) => <rect x="14" y={y} width="42" height="2" fill="#b22234" key={y} />)}
-          <rect x="14" y="6" width="18" height="14" fill="#3c3b6e" />
-          <g fill="#fff">
-            <circle cx="17" cy="9" r=".8" /><circle cx="22" cy="9" r=".8" /><circle cx="27" cy="9" r=".8" />
-            <circle cx="19.5" cy="13" r=".8" /><circle cx="24.5" cy="13" r=".8" /><circle cx="29.5" cy="13" r=".8" />
-            <circle cx="17" cy="17" r=".8" /><circle cx="22" cy="17" r=".8" /><circle cx="27" cy="17" r=".8" />
-          </g>
-          <rect className="flag-outline" x="14" y="6" width="42" height="26" rx="1" />
-        </g>
-        <g className={`language-flag is-vietnam ${language === "vi" ? "is-active" : ""}`} transform="rotate(-6 86 4)">
-          <rect x="44" y="6" width="42" height="26" rx="1" fill="#da251d" />
-          <polygon points="65,10 67.1,16.3 73.7,16.3 68.4,20.2 70.4,26.5 65,22.6 59.6,26.5 61.6,20.2 56.3,16.3 62.9,16.3" fill="#ffcd00" />
-          <rect className="flag-outline" x="44" y="6" width="42" height="26" rx="1" />
-        </g>
+        <rect className="flag-outline" x="1" y="1" width="42" height="28" rx="2" />
       </svg>
       <span className="sr-only">Current language: {language === "en" ? "English" : "Vietnamese"}</span>
     </button>
