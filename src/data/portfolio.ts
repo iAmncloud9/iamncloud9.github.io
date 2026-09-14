@@ -38,7 +38,7 @@ export const rootFiles = {
     link: null,
   },
   "devil.txt": {
-    content: "Continue ",
+    content: "You found my secret. Continue ",
     link: {
       label: "here",
       href: "https://youtu.be/dQw4w9WgXcQ?si=MYGaL_W9A68wDQa1",

@@ -22,7 +22,7 @@ const HOME = `/home/${profile.alias}`;
 const DIRECTORIES = [...Object.keys(portfolioFiles), "blogs"];
 const COMMANDS = ["help", "whoami", "pwd", "ls", "cd", "cat", "tree", "open", "history", "date", "clear", "exit"];
 const HEADER_MOTTOS = ["LEARN TO HACK", "HACK TO LEARN"];
-const LEAVE_HOME_WARNING = "WTF? Where are you going? Nothing here? Wanna continue?";
+const LEAVE_HOME_WARNING = "WTF? Where are you going? Nothing here?";
 
 type VirtualEntry = { name: string; type: "directory" | "file" };
 
@@ -107,7 +107,11 @@ function Prompt({ path }: { path: string }) {
 }
 
 function ConfirmationPrompt() {
-  return <span className="confirmation-prompt">{LEAVE_HOME_WARNING} <span>[y/n]</span></span>;
+  return (
+    <span className="confirmation-prompt">
+      {LEAVE_HOME_WARNING} <span className="confirmation-question">Wanna continue? <span>[y/n]</span></span>
+    </span>
+  );
 }
 
 function ClickableCommand({ command, children, className = "" }: { command: string; children: ReactNode; className?: string }) {
