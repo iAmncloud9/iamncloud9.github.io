@@ -79,6 +79,8 @@ a { color: inherit; }
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
   justify-self: start;
   font: 600 17.6px/1 var(--sans);
   color: #dcebe3;
@@ -87,7 +89,8 @@ a { color: inherit; }
 }
 
 .brand-mark {
-  display: inline-grid;
+  display: grid;
+  flex: none;
   width: 25px;
   height: 25px;
   margin-right: 8px;
@@ -179,7 +182,8 @@ a { color: inherit; }
 .welcome-help button:hover { background: var(--green); color: #08100c; }
 
 .output-block { margin-top: 17px; }
-.previous-command, .command-line { display: flex; align-items: baseline; gap: 10px; min-width: 0; font-size: var(--terminal-font-size); }
+.previous-command, .command-line { display: flex; gap: 10px; min-width: 0; font-size: var(--terminal-font-size); }
+.previous-command { align-items: baseline; }
 .previous-command > span:last-child { color: #d3ddd7; overflow-wrap: anywhere; }
 .prompt { display: inline-flex; flex: none; align-items: baseline; }
 .prompt-user { color: var(--green); }
@@ -193,8 +197,8 @@ a { color: inherit; }
 .command-line.is-confirmation input { flex: 1; width: auto; min-width: 40px; }
 .command-result { margin: 9px 0 9px 3px; color: #93a29a; font-size: var(--terminal-font-size); line-height: 1.75; }
 .command-result p { margin: 0; }
-.command-line { margin-top: 18px; padding-bottom: 12px; }
-.command-line input { width: 100%; min-width: 60px; padding: 0; border: 0; outline: 0; caret-color: var(--green); color: #e1e9e4; background: transparent; font-size: var(--terminal-font-size); }
+.command-line { align-items: center; margin-top: 18px; padding-bottom: 12px; line-height: 1.5; }
+.command-line input { width: 100%; height: 1.5em; min-width: 60px; padding: 0; border: 0; outline: 0; appearance: none; caret-color: var(--green); color: #e1e9e4; background: transparent; font-size: inherit; line-height: inherit; }
 .accent { color: var(--green); }
 
 .output-heading { margin: 0 0 8px !important; color: #d1ded7; font-size: 11px; font-weight: 500; letter-spacing: .16em; }
