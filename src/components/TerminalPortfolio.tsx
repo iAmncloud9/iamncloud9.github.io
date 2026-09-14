@@ -26,6 +26,7 @@ const LEAVE_HOME_WARNING = "WTF? Where are you going? Nothing here?";
 const WELCOME_LEAD = "WELCOME TO MY";
 const WELCOME_TITLE = "PORTFOLIO";
 const WELCOME_TYPING_DURATION = 10_000;
+const WELCOME_LEAD_SPEED_MULTIPLIER = 1.3;
 const WELCOME_LOOP_PAUSE = 2_000;
 
 type VirtualEntry = { name: string; type: "directory" | "file" };
@@ -96,11 +97,14 @@ function Welcome() {
 
     const typeNextCharacter = () => {
       if (currentCharacter < totalCharacters) {
+        const nextCharacterDelay = currentCharacter < WELCOME_LEAD.length
+          ? characterDelay / WELCOME_LEAD_SPEED_MULTIPLIER
+          : characterDelay;
         timer = window.setTimeout(() => {
           currentCharacter += 1;
           setVisibleCharacters(currentCharacter);
           typeNextCharacter();
-        }, characterDelay);
+        }, nextCharacterDelay);
         return;
       }
 
