@@ -315,7 +315,7 @@ kbd { padding: 1px 5px; border: 1px solid #334039; border-bottom-width: 2px; bor
 .blog-nav-actions { display: flex; align-items: center; gap: 20px; }
 .blog-language-toggle { width: 50px; height: 36px; flex: none; padding: 2px; border: 0; outline: 0; background: transparent; cursor: pointer; }
 .blog-language-toggle:focus-visible { border-radius: 6px; box-shadow: 0 0 0 2px #070b0a, 0 0 0 4px var(--green); }
-.single-language-flag { display: block; width: 60%; height: 60%; margin: auto; filter: drop-shadow(0 3px 4px rgba(0,0,0,.38)); transition: filter .18s ease, transform .18s ease; animation: flag-swap .2s ease both; }
+.single-language-flag { display: block; width: 30%; height: 30%; margin: auto; filter: drop-shadow(0 3px 4px rgba(0,0,0,.38)); transition: filter .18s ease, transform .18s ease; animation: flag-swap .2s ease both; }
 .blog-language-toggle:hover .single-language-flag { filter: brightness(1.08) drop-shadow(0 0 6px rgba(112,245,173,.3)); transform: translateY(-1px); }
 .flag-outline { fill: none; stroke: rgba(255,255,255,.28); stroke-width: .7; }
 .blog-article { margin-top: 55px; }
