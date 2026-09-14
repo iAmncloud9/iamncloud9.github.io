@@ -19,6 +19,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const blogIndex = blogs.findIndex((item) => item.slug === slug);
   const blog = blogs[blogIndex];
   if (!blog) notFound();
+  const previousBlog = blogs[(blogIndex - 1 + blogs.length) % blogs.length];
   const nextBlog = blogs[(blogIndex + 1) % blogs.length];
 
   return (
@@ -50,9 +51,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <div className="blog-tags">{blog.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>
             </div>
           </div>
-          <Link className="blog-next" href={`/blog/${nextBlog.slug}`}>
-            <span><small>NEXT FILE</small><strong>{nextBlog.title}</strong></span><span>→</span>
-          </Link>
+          <nav className="blog-navigation" aria-label="Blog post navigation">
+            <Link className="blog-next is-prev" href={`/blog/${previousBlog.slug}`}>
+              <span className="blog-navigation-arrow">←</span><span><small>PREV FILE</small><strong>{previousBlog.title}</strong></span>
+            </Link>
+            <Link className="blog-next is-next" href={`/blog/${nextBlog.slug}`}>
+              <span><small>NEXT FILE</small><strong>{nextBlog.title}</strong></span><span className="blog-navigation-arrow">→</span>
+            </Link>
+          </nav>
         </article>
       </div>
     </main>
