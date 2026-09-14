@@ -97,6 +97,8 @@ a { color: inherit; }
   place-items: center;
   color: #f7faf8;
   filter: drop-shadow(0 0 7px rgba(112,245,173,.18));
+  line-height: 0;
+  transform: translateY(2px);
 }
 
 .brand-mark svg { display: block; width: 25px; height: 25px; fill: currentColor; }
